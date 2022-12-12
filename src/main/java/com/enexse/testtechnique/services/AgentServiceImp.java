@@ -64,7 +64,7 @@ public class AgentServiceImp implements AgentService {
      * This method allows updating agents by name
      **/
     @Override
-    public Optional<Agent> updateAgent(String name, Agent agent) {
+    public Agent updateAgent(String name, Agent agent) {
         Optional<Agent> savedAgent = agentRepository.findByName(name);
         if (savedAgent.isPresent()) {
             savedAgent.get().setName(agent.getName());
@@ -74,9 +74,9 @@ public class AgentServiceImp implements AgentService {
             savedAgent.get().setStatus(agent.getStatus());
             savedAgent.get().setVersion(agent.getVersion());
             savedAgent.get().setLastKeepAlive(agent.getLastKeepAlive());
-            return savedAgent;
+            return agentRepository.save(savedAgent.get());
         } else {
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -91,6 +91,10 @@ public class AgentServiceImp implements AgentService {
         agents.forEach(agentList::add);
         Map<Status, Long> grouped = agentList.stream().collect(Collectors.groupingBy(Agent::getStatus, Collectors.counting()));
 
+        grouped.putIfAbsent(Status.active, 0L);
+        grouped.putIfAbsent(Status.disconnected, 0L);
+        grouped.putIfAbsent(Status.pending, 0L);
+        grouped.putIfAbsent(Status.never_connected, 0L);
         agentView.setAgentStatus(grouped);
         Long total = agentRepository.count();
 

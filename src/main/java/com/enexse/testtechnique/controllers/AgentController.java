@@ -12,6 +12,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping(path = "/api/v1/")
 public class AgentController {
@@ -80,8 +81,12 @@ public class AgentController {
      */
     @PutMapping("{name}")
     public ResponseEntity<Agent> updateAgent(@PathVariable("name") String name, @RequestBody Agent agent) {
-        Optional<Agent> savedAgent = agentService.updateAgent(name, agent);
-        return savedAgent.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+        Agent savedAgent = agentService.updateAgent(name, agent);
+        if (savedAgent != null) {
+            return new ResponseEntity<>(savedAgent, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     /**

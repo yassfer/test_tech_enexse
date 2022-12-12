@@ -14,7 +14,7 @@ public interface AgentService {
 
     boolean deleteAgent(String id);
 
-    Optional<Agent> updateAgent(String name, Agent agent);
+    Agent updateAgent(String name, Agent agent);
 
     AgentView getAgentsByStatus();
 }
